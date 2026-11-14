@@ -80,3 +80,22 @@ One branch per change; `main` contains every branch. Base: ESPHome `dev` at `1f7
 ## Thanks
 
 Everyone this project builds on: [ATTRIBUTIONS.md](https://github.com/p1ngb4ck/esphome/blob/dev/ATTRIBUTIONS.md).
+
+## Branch structure
+
+Each `pr/` branch holds one part of this topic on top of upstream and says in its `BRANCH.md` what it is based on. `main` holds all of them.
+
+| Branch | Based on |
+|---|---|
+| `pr/acs712` | `pr/adc` |
+| `pr/adc` | upstream only |
+| `pr/ads1115` | upstream only |
+| `pr/api-crash-report-once` | upstream only |
+| `pr/ir-rf-base-define` | upstream only |
+| `pr/lvgl-color-picker-setters` | upstream only |
+| `pr/lvgl-keyboard-text` | upstream only |
+| `pr/lvgl-menu-back-button` | upstream only |
+| `pr/select` | upstream only |
+| `pr/spdif` | upstream only |
+| `pr/web-server-entity-row-css` | upstream only |
+| `pr/zmpt101b` | `pr/adc` |
