@@ -155,10 +155,8 @@ float ADS1115Component::do_measurement_(ADS1115Multiplexer multiplexer, ADS1115G
   }
 
   if (!this->continuous_mode_ || this->prev_config_ != config) {
-    if (!this->write_byte_16(ADS1115_REGISTER_CONFIG, config)) {
-      this->status_set_warning();
+    if (!this->status_comm_check(this->write_byte_16(ADS1115_REGISTER_CONFIG, config)))
       return NAN;
-    }
     this->prev_config_ = config;
 
     // Delay calculated as: ceil((1000/SPS)+.5)
@@ -227,10 +225,8 @@ float ADS1115Component::do_measurement_(ADS1115Multiplexer multiplexer, ADS1115G
   }
 
   uint16_t raw_conversion;
-  if (!this->read_byte_16(ADS1115_REGISTER_CONVERSION, &raw_conversion)) {
-    this->status_set_warning();
+  if (!this->status_comm_result(this->read_byte_16(ADS1115_REGISTER_CONVERSION, &raw_conversion)))
     return NAN;
-  }
 
   if (resolution == ADS1015_12_BITS) {
     // ADS1015 returns 12-bit value left-justified in 16 bits; shift right and sign-extend
@@ -264,7 +260,6 @@ float ADS1115Component::do_measurement_(ADS1115Multiplexer multiplexer, ADS1115G
       millivolts = NAN;
   }
 
-  this->status_clear_warning();
   return millivolts / 1e3f;
 }
 
