@@ -74,13 +74,6 @@ class APIServer final : public Component
   void on_camera_image(const std::shared_ptr<camera::CameraImage> &image) override;
 #endif
   void set_port(uint16_t port) { this->port_ = port; }
-  using HiddenFn = bool (*)(const EntityBase *entity);
-  void set_hidden_fn(HiddenFn hidden) { this->hidden_fn_ = hidden; }
-  bool is_hidden(const EntityBase *entity) const {
-    return (entity->get_publish_off() & ENTITY_API_OFF) != 0 ||
-           (this->hidden_fn_ != nullptr && this->hidden_fn_(entity));
-  }
-  void relist_clients();
   void set_reboot_timeout(uint32_t reboot_timeout) { this->reboot_timeout_ = reboot_timeout; }
   void set_batch_delay(uint16_t batch_delay) { this->batch_delay_ = batch_delay; }
   uint16_t get_batch_delay() const { return batch_delay_; }
@@ -162,7 +155,6 @@ class APIServer final : public Component
 #endif
 #ifdef USE_API_HOMEASSISTANT_SERVICES
   void send_homeassistant_action(const HomeassistantActionRequest &call);
-  bool has_homeassistant_action_subscriber() const;
 
 #ifdef USE_API_HOMEASSISTANT_ACTION_RESPONSES
   // Action response handling
@@ -181,11 +173,7 @@ class APIServer final : public Component
   }
 #ifdef USE_API_CUSTOM_SERVICES
   // Only compile push_back method when custom_services: true (external components)
-  void register_user_service(UserServiceDescriptor *descriptor) {
-    this->user_services_.push_back(descriptor);
-    note_registration(&APIServer::unregister_user_service_, this, descriptor, nullptr);
-  }
-  static void unregister_user_service_(void *server, void *descriptor, void *unused);
+  void register_user_service(UserServiceDescriptor *descriptor) { this->user_services_.push_back(descriptor); }
 #endif
 #ifdef USE_API_USER_DEFINED_ACTION_RESPONSES
   // Action call context management - supports concurrent calls from multiple clients
@@ -298,7 +286,6 @@ class APIServer final : public Component
 #endif
 
  protected:
-  HiddenFn hidden_fn_{nullptr};
   // Accept incoming socket connections. Only called when socket has pending connections.
   void __attribute__((noinline)) accept_new_connections_();
   /// Takes the socket into a new connection and starts it; callers must have
